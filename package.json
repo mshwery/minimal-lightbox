@@ -1,9 +1,11 @@
 {
   "name": "minimal-lightbox",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "compile": "babel --modules umd src/index.js -o dist/index.js",
+    "debug": "babel --source-maps-inline --modules umd src/index.js -o dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/mshwery/minimal-lightbox/issues"
   },
-  "homepage": "https://github.com/mshwery/minimal-lightbox"
+  "homepage": "https://github.com/mshwery/minimal-lightbox",
+  "devDependencies": {
+    "babel": "^5.8.20"
+  }
 }
