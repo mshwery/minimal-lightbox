@@ -6,6 +6,9 @@
     "Matt Shwery <mshwery@gmail.com>"
   ],
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
+  "dependencies": {
+    "bluebird": "^2.9.34"
+  },  
   "main": "dist/index.js",
   "keywords": [
     "lightbox",

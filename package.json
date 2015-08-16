@@ -30,8 +30,11 @@
   },
   "homepage": "https://github.com/mshwery/minimal-lightbox",
   "devDependencies": {
-    "babel": "^5.8.20",
+    "babel": "^5.8.21",
     "babel-core": "^5.8.22",
     "babel-plugin-object-assign": "^1.2.1"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.34"
   }
 }

@@ -11,6 +11,7 @@
     global.Zoomable = mod.exports;
   }
 })(this, function (exports) {
+  /* global Promise */
   'use strict';
 
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -217,12 +218,18 @@
     var element = this;
     var height = element.offsetHeight;
     var width = element.offsetWidth;
-    var ratio = height / width * 100;
+    var ratio = Math.round(height / width * 100);
+    // let actualRatio = Math.round(dimensions.height / dimensions.width * 100);
+
+    // if (ratio !== actualRatio) {
+    element.setAttribute('data-width', width);
+    element.setAttribute('data-height', height);
+    element.setAttribute('data-actual-width', dimensions.width);
+    element.setAttribute('data-actual-height', dimensions.height);
+    // }
 
     element.insertAdjacentHTML('beforebegin', '<div class="media-fill" style="padding-top: ' + ratio + '%;"></div>');
     element.classList.add('media-image');
-    element.setAttribute('data-width', dimensions.width);
-    element.setAttribute('data-height', dimensions.height);
   }
 
   function getViewportDimensions() {
@@ -253,18 +260,36 @@
     var totalOffset = margin * 2;
     var viewport = getViewportDimensions();
 
-    var scaleX = viewport.width / (element.offsetWidth + totalOffset);
-    var scaleY = viewport.height / (element.offsetHeight + totalOffset);
+    var scaleX = viewport.width / (getWidth(element) + totalOffset);
+    var scaleY = viewport.height / (getHeight(element) + totalOffset);
 
     return Math.min(scaleY, scaleX);
+  }
+
+  function getWidth(element) {
+    return element.offsetWidth;
+    // @todo grow to actual width/height ratio
+    // let width = element.offsetWidth;
+
+    // if (element.dataset.width && element.dataset.height) {
+    //   width = Number(element.dataset.width / element.dataset.height * getHeight(element));
+    // }
+
+    // return width;
+  }
+
+  function getHeight(element) {
+    return element.offsetHeight;
   }
 
   function getTranslate(element) {
     var viewport = getViewportDimensions();
 
-    // image width and height
-    var imageWidth = element.offsetWidth;
-    var imageHeight = element.offsetHeight;
+    /**
+     * get the actual image width and height
+     */
+    var imageWidth = getWidth(element);
+    var imageHeight = getHeight(element);
 
     // compute distance from image center to viewport center
     var imageCenterScrolltop = offset(element).top + imageHeight / 2 - window.scrollY;

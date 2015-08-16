@@ -1,3 +1,4 @@
+/* global Promise */
 'use strict';
 
 const PREFIXES = [
@@ -172,18 +173,24 @@ function createFillerElement(dimensions) {
   let element = this;
   let height = element.offsetHeight;
   let width = element.offsetWidth;
-  let ratio = height / width * 100;
+  let ratio = Math.round(height / width * 100);
+  // let actualRatio = Math.round(dimensions.height / dimensions.width * 100);
+
+  // if (ratio !== actualRatio) {
+    element.setAttribute('data-width', width);
+    element.setAttribute('data-height', height);    
+    element.setAttribute('data-actual-width', dimensions.width);
+    element.setAttribute('data-actual-height', dimensions.height);    
+  // }
 
   element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
   element.classList.add('media-image');
-  element.setAttribute('data-width', dimensions.width);
-  element.setAttribute('data-height', dimensions.height);
 }
 
 function getViewportDimensions() {
   // viewport width and height
-  var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-  var viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  let viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  let viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
   
   return {
     width: viewportWidth,
@@ -192,7 +199,7 @@ function getViewportDimensions() {
 }
 
 function offset(node) {
-  var rect = node.getBoundingClientRect()
+  let rect = node.getBoundingClientRect()
 
   return {
     top: rect.top + document.body.scrollTop,
@@ -201,32 +208,50 @@ function offset(node) {
 }
 
 function getZoom(element) {
-  var scale = 1;
+  let scale = 1;
   
   // margin between full viewport and full image
-  var margin = 20;
-  var totalOffset = margin * 2;
-  var viewport = getViewportDimensions();
+  let margin = 20;
+  let totalOffset = margin * 2;
+  let viewport = getViewportDimensions();
  
-  var scaleX = viewport.width / (element.offsetWidth + totalOffset);
-  var scaleY = viewport.height / (element.offsetHeight + totalOffset);
+  let scaleX = viewport.width / (getWidth(element) + totalOffset);
+  let scaleY = viewport.height / (getHeight(element) + totalOffset);
   
   return Math.min(scaleY,scaleX);
 }
 
+function getWidth(element) {
+  return element.offsetWidth;
+  // @todo grow to actual width/height ratio
+  // let width = element.offsetWidth;
+
+  // if (element.dataset.width && element.dataset.height) {
+  //   width = Number(element.dataset.width / element.dataset.height * getHeight(element));
+  // }
+
+  // return width;
+}
+
+function getHeight(element) {
+  return element.offsetHeight;
+}
+
 function getTranslate(element) {
-  var viewport = getViewportDimensions();
+  let viewport = getViewportDimensions();
   
-  // image width and height
-  var imageWidth = element.offsetWidth;
-  var imageHeight = element.offsetHeight;
+  /**
+   * get the actual image width and height
+   */
+  let imageWidth = getWidth(element);
+  let imageHeight = getHeight(element);
 
   // compute distance from image center to viewport center
-  var imageCenterScrolltop =  offset(element).top + (imageHeight / 2) - window.scrollY;
-  var translateY = (viewport.height / 2) - imageCenterScrolltop;
+  let imageCenterScrolltop =  offset(element).top + (imageHeight / 2) - window.scrollY;
+  let translateY = (viewport.height / 2) - imageCenterScrolltop;
   
-  var imageCenterWidth = offset(element).left + (imageWidth / 2);
-  var translateX = (viewport.width / 2) - imageCenterWidth;
+  let imageCenterWidth = offset(element).left + (imageWidth / 2);
+  let translateX = (viewport.width / 2) - imageCenterWidth;
   
   return `translate(${translateX}px, ${translateY}px) translateZ(0px)`;
 }
