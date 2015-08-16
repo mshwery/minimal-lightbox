@@ -8,14 +8,14 @@
       exports: {}
     };
     factory(mod.exports);
-    global.index = mod.exports;
+    global.Zoomable = mod.exports;
   }
 })(this, function (exports) {
   'use strict';
 
-  // import prefixedEvent from './prefix-event';
-
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+  var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -52,11 +52,17 @@
     }
   }
 
+  var defaults = {
+    attachTo: 'body',
+    ignoreScroll: false
+  };
+
   var Zoomable = (function () {
     function Zoomable(element) {
       _classCallCheck(this, Zoomable);
 
       this.element = element;
+      this.config = _extends({}, defaults, { element: element });
 
       // bind element to do things when the image has loaded
       element.onload = onImageLoad;
@@ -114,7 +120,9 @@
           }
 
           // remove scroll listener on this element
-          document.removeEventListener('scroll', scrollFn);
+          if (!this.config.ignoreScroll) {
+            document.removeEventListener('scroll', scrollFn);
+          }
         } else {
           var translate = getTranslate(element);
           var scale = getZoom(element);
@@ -134,7 +142,9 @@
           once(overlay, 'click', this.toggleZoom.bind(this));
 
           // listen for scroll, bound to this element
-          document.addEventListener('scroll', scrollFn);
+          if (!this.config.ignoreScroll) {
+            document.addEventListener('scroll', scrollFn);
+          }
         }
 
         element.classList.add('zooming');

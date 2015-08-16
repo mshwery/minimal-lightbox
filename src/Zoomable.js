@@ -18,9 +18,15 @@ function prefixedEvent(element, type, callback) {
   }
 }
 
+const defaults = {
+  attachTo: 'body',
+  ignoreScroll: false
+};
+
 class Zoomable {
   constructor(element) {
     this.element = element;
+    this.config = Object.assign({}, defaults, { element: element });
 
     // bind element to do things when the image has loaded
     element.onload = onImageLoad;
@@ -73,7 +79,9 @@ class Zoomable {
       }
 
       // remove scroll listener on this element
-      document.removeEventListener('scroll', scrollFn);
+      if (!this.config.ignoreScroll) {
+        document.removeEventListener('scroll', scrollFn);
+      }
     } else {
       let translate = getTranslate(element);
       let scale = getZoom(element);
@@ -93,7 +101,9 @@ class Zoomable {
       once(overlay, 'click', this.toggleZoom.bind(this));
 
       // listen for scroll, bound to this element
-      document.addEventListener('scroll', scrollFn);
+      if (!this.config.ignoreScroll) {
+        document.addEventListener('scroll', scrollFn);
+      }
     }
 
     element.classList.add('zooming');
