@@ -29,7 +29,7 @@ class Zoomable {
     this.config = Object.assign({}, defaults, { element: element });
 
     // bind element to do things when the image has loaded
-    element.onload = onImageLoad;
+    onImageLoad.call(element);
 
     // bind click to toggle zoom
     element.addEventListener('click', this.toggleZoom.bind(this), false);
@@ -132,11 +132,13 @@ function once(node, type, callback) {
   });
 }
 
-function getActualImageSize(element) {
+function getActualImageSize(src) {
   let dimensions = new Promise(function(resolve, reject) {  
 
     // Make in memory copy of image to avoid css issues
-    let image = element.cloneNode(true);
+    // let image = element.cloneNode(true);
+    let image = new Image();
+    image.src = src;
 
     image.onload = function() {
       resolve({
@@ -151,17 +153,31 @@ function getActualImageSize(element) {
 
 function onImageLoad() {
   let element = this;
+  let src = element.src;
+
+  if (!src && element.style.backgroundImage) {
+    // finds the first background image matching the url pattern
+    src = element.style.backgroundImage.replace(/.*\s?url\([\'\"]?/, '').replace(/[\'\"]?\).*/, '');
+  }
+
+  if (src) {
+    getActualImageSize(src).then(createFillerElement.bind(element));
+  }
+}
+
+/** 
+ * insert filler element before element
+ */
+function createFillerElement(dimensions) {
+  let element = this;
   let height = element.offsetHeight;
   let width = element.offsetWidth;
   let ratio = height / width * 100;
-  
-  getActualImageSize(element).then(function(dimensions) {
-    // insert filler before element
-    element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
-    element.classList.add('media-image');
-    element.setAttribute('data-width', dimensions.width);
-    element.setAttribute('data-height', dimensions.height);
-  });
+
+  element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
+  element.classList.add('media-image');
+  element.setAttribute('data-width', dimensions.width);
+  element.setAttribute('data-height', dimensions.height);
 }
 
 function getViewportDimensions() {
