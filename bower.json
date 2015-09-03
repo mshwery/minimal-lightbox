@@ -1,13 +1,12 @@
 {
   "name": "minimal-lightbox",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage": "https://github.com/mshwery/minimal-lightbox",
   "authors": [
     "Matt Shwery <mshwery@gmail.com>"
   ],
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
-  "dependencies": {
-  },
+  "dependencies": {},
   "main": "dist/index.js",
   "keywords": [
     "lightbox",
