@@ -1,6 +1,6 @@
 {
   "name": "minimal-lightbox",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
   "main": "dist/index.js",
   "scripts": {
