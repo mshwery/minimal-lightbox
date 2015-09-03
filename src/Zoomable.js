@@ -19,6 +19,16 @@ function prefixedEvent(element, type, callback) {
   }
 }
 
+function addPrefixedStyle(element, property, style) {
+  for (let prefix of PREFIXES) {
+    if (!prefix) {
+      property = property.toLowerCase();
+    }
+
+    element.style[prefix + property] = style;
+  }
+}
+
 const defaults = {
   attachTo: 'body',
   ignoreScroll: false
@@ -70,7 +80,7 @@ class Zoomable {
     }
 
     if (isZoomed) {
-      element.style.transform = '';
+      addPrefixedStyle(element, 'Transform', '');
       element.classList.add('zooming-out');
       element.classList.remove('zoomed');
 
@@ -91,7 +101,7 @@ class Zoomable {
       // prepare overlay element
       overlay.classList.add('zoom-overlay', 'fade-in');
 
-      element.style.transform = `${translate} scale(${scale})`;
+      addPrefixedStyle(element, 'Transform', `${translate} scale(${scale})`);
       element.classList.add('zoomed', 'zooming-in');
       this._ignoreScroll = false;
 
