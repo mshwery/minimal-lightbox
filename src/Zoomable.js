@@ -221,7 +221,7 @@ function createFillerElement(dimensions) {
     element.setAttribute('data-actual-height', dimensions.height);
   // }
 
-  element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
+  element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="width:${width}px; height:${height}px"></div>`);
   element.classList.add('media-image');
 }
 
