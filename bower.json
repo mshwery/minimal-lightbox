@@ -7,7 +7,7 @@
   ],
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
   "dependencies": {},
-  "main": "dist/index.js",
+  "main": "dist/minimal-lightbox.js",
   "keywords": [
     "lightbox",
     "medium",
