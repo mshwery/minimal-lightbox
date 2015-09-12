@@ -2,9 +2,34 @@
 <html>
 <head>
   <title>Example Lightbox</title>
-  <link rel="stylesheet" type="text/css" href="./styles.css">
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../dist/styles.css">
 </head>
+<style type="text/css">
+  body {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .inset-image {
+    width: 50%;
+    float: left;
+    margin-top: 10px;
+    margin-right: 30px;
+  }
+
+  .bg-image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 200px;
+    height: 80px;
+  }
+
+  img {
+    max-width: 100%;
+  }
+</style>
 <body>
   <img src='http://lorempixel.com/1000/400' data-action='zoom'/>
   <p>
