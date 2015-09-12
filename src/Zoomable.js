@@ -52,7 +52,8 @@ const animationEndPrefixed = whichAnimationEvent();
 
 const defaults = {
   attachTo: 'body',
-  ignoreScroll: false
+  ignoreScroll: false,
+  useActualMax: false
 };
 
 class Zoomable {
@@ -123,7 +124,7 @@ class Zoomable {
       }
     } else {
       let translate = getTranslate(element);
-      let scale = getZoom(element);
+      let scale = getZoom(element, this.useActualMax);
       let overlay = document.createElement('div');
 
       // prepare overlay element
@@ -245,7 +246,7 @@ function offset(node) {
   };
 }
 
-function getZoom(element) {
+function getZoom(element, useActualMax) {
   let scale = 1;
 
   // margin between full viewport and full image
@@ -253,8 +254,13 @@ function getZoom(element) {
   let totalOffset = margin * 2;
   let viewport = getViewportDimensions();
 
-  let scaleX = Math.min(viewport.width / (getWidth(element) + totalOffset), element.dataset.actualWidth / getWidth(element));
-  let scaleY = Math.min(viewport.height / (getHeight(element) + totalOffset), element.dataset.actualHeight / getHeight(element));
+  let scaleX = viewport.width / (getWidth(element) + totalOffset);
+  let scaleY = viewport.height / (getHeight(element) + totalOffset);
+
+  if (useActualMax) {
+    scaleX = Math.min(scaleX, element.dataset.actualWidth / getWidth(element));
+    scaleY = Math.min(scaleY, element.dataset.actualHeight / getHeight(element));
+  }
 
   return Math.min(scaleY,scaleX);
 }
