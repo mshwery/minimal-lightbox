@@ -1,11 +1,11 @@
 {
   "name": "minimal-lightbox",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
-  "main": "dist/index.js",
+  "main": "dist/minimal-lightbox.js",
   "scripts": {
-    "compile": "browserify -t [ babelify --optional runtime ] src/Zoomable.js -o dist/index.js",
-    "debug": "babel --optional runtime --source-maps-inline --modules umd src/Zoomable.js -o dist/index.js",
+    "compile": "browserify -t [ babelify --optional runtime ] src/Zoomable.js -o dist/minimal-lightbox.js && postcss --use autoprefixer src/styles.css -o dist/minimal-lightbox.css",
+    "debug": "babel --optional runtime --source-maps-inline --modules umd src/Zoomable.js -o dist/minimal-lightbox.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -30,11 +30,13 @@
   },
   "homepage": "https://github.com/mshwery/minimal-lightbox",
   "devDependencies": {
+    "autoprefixer": "^6.0.2",
     "babel": "^5.8.21",
     "babel-core": "^5.8.22",
     "babel-runtime": "^5.8.20",
     "babelify": "^6.3.0",
-    "browserify": "^11.0.1"
+    "browserify": "^11.0.1",
+    "postcss-cli": "^2.1.0"
   },
   "dependencies": {}
 }
