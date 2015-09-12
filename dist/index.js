@@ -1349,8 +1349,8 @@ function getZoom(element) {
   var totalOffset = margin * 2;
   var viewport = getViewportDimensions();
 
-  var scaleX = viewport.width / (getWidth(element) + totalOffset);
-  var scaleY = viewport.height / (getHeight(element) + totalOffset);
+  var scaleX = Math.min(viewport.width / (getWidth(element) + totalOffset), element.dataset.actualWidth / getWidth(element));
+  var scaleY = Math.min(viewport.height / (getHeight(element) + totalOffset), element.dataset.actualHeight / getHeight(element));
 
   return Math.min(scaleY, scaleX);
 }
