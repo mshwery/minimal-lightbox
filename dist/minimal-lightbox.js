@@ -1135,7 +1135,8 @@ var animationEndPrefixed = whichAnimationEvent();
 
 var defaults = {
   attachTo: 'body',
-  ignoreScroll: false
+  ignoreScroll: false,
+  useActualMax: false
 };
 
 var Zoomable = (function () {
@@ -1215,7 +1216,7 @@ var Zoomable = (function () {
         }
       } else {
         var translate = getTranslate(element);
-        var scale = getZoom(element);
+        var scale = getZoom(element, this.useActualMax);
         var overlay = document.createElement('div');
 
         // prepare overlay element
@@ -1317,7 +1318,7 @@ function createFillerElement(dimensions) {
   element.setAttribute('data-actual-height', dimensions.height);
   // }
 
-  element.insertAdjacentHTML('beforebegin', '<div class="media-fill" style="padding-top: ' + ratio + '%;"></div>');
+  element.insertAdjacentHTML('beforebegin', '<div class="media-fill" style="width:' + width + 'px; height:' + height + 'px"></div>');
   element.classList.add('media-image');
 }
 
@@ -1336,12 +1337,12 @@ function offset(node) {
   var rect = node.getBoundingClientRect();
 
   return {
-    top: rect.top + document.body.scrollTop,
-    left: rect.left + document.body.scrollLeft
+    top: rect.top + (document.documentElement.scrollTop || document.body.scrollTop),
+    left: rect.left + (document.documentElement.scrollLeft || document.body.scrollLeft)
   };
 }
 
-function getZoom(element) {
+function getZoom(element, useActualMax) {
   var scale = 1;
 
   // margin between full viewport and full image
@@ -1351,6 +1352,11 @@ function getZoom(element) {
 
   var scaleX = viewport.width / (getWidth(element) + totalOffset);
   var scaleY = viewport.height / (getHeight(element) + totalOffset);
+
+  if (useActualMax) {
+    scaleX = Math.min(scaleX, element.dataset.actualWidth / getWidth(element));
+    scaleY = Math.min(scaleY, element.dataset.actualHeight / getHeight(element));
+  }
 
   return Math.min(scaleY, scaleX);
 }
