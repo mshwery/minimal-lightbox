@@ -9,6 +9,13 @@ const PREFIXES = [
   ''
 ];
 
+const ANIMATION_PREFIXES = {
+  'animation':'animationend',
+  'OAnimation':'oanimationend',
+  'MSAnimation':'MSAnimationEnd',
+  'WebkitAnimation':'webkitAnimationEnd'
+};
+
 function prefixedEvent(element, type, callback) {
   for (let prefix of PREFIXES) {
     if (!prefix) {
@@ -29,6 +36,20 @@ function addPrefixedStyle(element, property, style) {
   }
 }
 
+// Determine the prefix for the animation events
+// @see: http://davidwalsh.name/css-animation-callback
+function whichAnimationEvent() {
+  let el = document.createElement('fakeelement');
+
+  for (let animationPrefix in ANIMATION_PREFIXES) {
+    if (el.style[animationPrefix] !== undefined) {
+      return ANIMATION_PREFIXES[animationPrefix];
+    }
+  }
+}
+
+const animationEndPrefixed = whichAnimationEvent();
+
 const defaults = {
   attachTo: 'body',
   ignoreScroll: false
@@ -44,9 +65,9 @@ class Zoomable {
 
     // bind click to toggle zoom
     element.addEventListener('click', this.toggleZoom.bind(this), false);
-    
+
     prefixedEvent(element, 'TransitionEnd', this.removeZoomClass.bind(this));
-      
+
     // wrap with container
     this.wrap();
   }
@@ -86,7 +107,14 @@ class Zoomable {
 
       // remove the next sibling (the overlay)
       if (element.nextElementSibling) {
-        element.nextElementSibling.remove();
+        let overlay = element.nextElementSibling;
+
+        overlay.classList.add('fade-out');
+        overlay.addEventListener(animationEndPrefixed, () => {
+          if(overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay); // element.remove() is not supported on ie
+          }
+        });
       }
 
       // remove scroll listener on this element
@@ -124,7 +152,7 @@ class Zoomable {
     if (!this._ignoreScroll) {
       this._ignoreScroll = true;
       this.toggleZoom.call(this, true);
-    }    
+    }
   }
 
   removeZoomClass() {
@@ -144,7 +172,7 @@ function once(node, type, callback) {
 }
 
 function getActualImageSize(src) {
-  let dimensions = new Promise(function(resolve, reject) {  
+  let dimensions = new Promise(function(resolve, reject) {
 
     // Make in memory copy of image to avoid css issues
     // let image = element.cloneNode(true);
@@ -156,7 +184,7 @@ function getActualImageSize(src) {
         width: this.width,
         height: this.height
       });
-    };    
+    };
   });
 
   return dimensions;
@@ -176,7 +204,7 @@ function onImageLoad() {
   }
 }
 
-/** 
+/**
  * insert filler element before element
  */
 function createFillerElement(dimensions) {
@@ -188,9 +216,9 @@ function createFillerElement(dimensions) {
 
   // if (ratio !== actualRatio) {
     element.setAttribute('data-width', width);
-    element.setAttribute('data-height', height);    
+    element.setAttribute('data-height', height);
     element.setAttribute('data-actual-width', dimensions.width);
-    element.setAttribute('data-actual-height', dimensions.height);    
+    element.setAttribute('data-actual-height', dimensions.height);
   // }
 
   element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
@@ -201,7 +229,7 @@ function getViewportDimensions() {
   // viewport width and height
   let viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
   let viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-  
+
   return {
     width: viewportWidth,
     height: viewportHeight
@@ -219,15 +247,15 @@ function offset(node) {
 
 function getZoom(element) {
   let scale = 1;
-  
+
   // margin between full viewport and full image
   let margin = 20;
   let totalOffset = margin * 2;
   let viewport = getViewportDimensions();
- 
+
   let scaleX = viewport.width / (getWidth(element) + totalOffset);
   let scaleY = viewport.height / (getHeight(element) + totalOffset);
-  
+
   return Math.min(scaleY,scaleX);
 }
 
@@ -249,7 +277,7 @@ function getHeight(element) {
 
 function getTranslate(element) {
   let viewport = getViewportDimensions();
-  
+
   /**
    * get the actual image width and height
    */
@@ -259,10 +287,10 @@ function getTranslate(element) {
   // compute distance from image center to viewport center
   let imageCenterScrolltop =  offset(element).top + (imageHeight / 2) - window.scrollY;
   let translateY = (viewport.height / 2) - imageCenterScrolltop;
-  
+
   let imageCenterWidth = offset(element).left + (imageWidth / 2);
   let translateX = (viewport.width / 2) - imageCenterWidth;
-  
+
   return `translate(${translateX}px, ${translateY}px) translateZ(0px)`;
 }
 
