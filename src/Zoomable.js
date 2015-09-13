@@ -57,9 +57,9 @@ const defaults = {
 };
 
 class Zoomable {
-  constructor(element) {
+  constructor(element, options) {
     this.element = element;
-    this.config = Object.assign({}, defaults, { element: element });
+    this.config = Object.assign({}, defaults, options, { element: element });
 
     // bind element to do things when the image has loaded
     onImageLoad.call(element);
@@ -310,4 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let element = elements[i];
     element.__zoomable__ = new Zoomable(element);
   }
+
 });
+
+export default Zoomable;
