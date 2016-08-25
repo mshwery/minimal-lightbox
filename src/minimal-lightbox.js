@@ -1,4 +1,3 @@
-/* global Promise */
 'use strict';
 
 const PREFIXES = [
@@ -172,23 +171,17 @@ function once(node, type, callback) {
   });
 }
 
-function getActualImageSize(src) {
-  let dimensions = new Promise(function(resolve, reject) {
+function getActualImageSize(src, callback) {
+  // Make in memory copy of image to avoid css issues
+  let image = new Image();
+  image.src = src;
 
-    // Make in memory copy of image to avoid css issues
-    // let image = element.cloneNode(true);
-    let image = new Image();
-    image.src = src;
-
-    image.onload = function() {
-      resolve({
-        width: this.width,
-        height: this.height
-      });
-    };
-  });
-
-  return dimensions;
+  image.onload = function() {
+    callback({
+      width: this.width,
+      height: this.height
+    });
+  };
 }
 
 function onImageLoad() {
@@ -201,7 +194,7 @@ function onImageLoad() {
   }
 
   if (src) {
-    getActualImageSize(src).then(createFillerElement.bind(element));
+    getActualImageSize(src, createFillerElement.bind(element));
   }
 }
 
@@ -213,14 +206,11 @@ function createFillerElement(dimensions) {
   let height = element.offsetHeight;
   let width = element.offsetWidth;
   let ratio = Math.round(height / width * 100);
-  // let actualRatio = Math.round(dimensions.height / dimensions.width * 100);
 
-  // if (ratio !== actualRatio) {
-    element.setAttribute('data-width', width);
-    element.setAttribute('data-height', height);
-    element.setAttribute('data-actual-width', dimensions.width);
-    element.setAttribute('data-actual-height', dimensions.height);
-  // }
+  element.setAttribute('data-width', width);
+  element.setAttribute('data-height', height);
+  element.setAttribute('data-actual-width', dimensions.width);
+  element.setAttribute('data-actual-height', dimensions.height);
 
   element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="width:${width}px; height:${height}px"></div>`);
   element.classList.add('media-image');
@@ -267,14 +257,6 @@ function getZoom(element, useActualMax) {
 
 function getWidth(element) {
   return element.offsetWidth;
-  // @todo grow to actual width/height ratio
-  // let width = element.offsetWidth;
-
-  // if (element.dataset.width && element.dataset.height) {
-  //   width = Number(element.dataset.width / element.dataset.height * getHeight(element));
-  // }
-
-  // return width;
 }
 
 function getHeight(element) {
@@ -301,13 +283,22 @@ function getTranslate(element) {
 }
 
 /**
- * bind to all elements with `data-action=zoom`
+ * Expose method to bind to new elements
  */
-document.addEventListener('DOMContentLoaded', () => {
-  let elements = document.querySelectorAll('[data-action=zoom]');
+function initializeElements(selector) {
+  let elements = document.querySelectorAll(selector);
 
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
     element.__zoomable__ = new Zoomable(element);
   }
+}
+
+/**
+ * bind to all elements with `data-action=zoom`
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  initializeElements('[data-action=zoom]');
 });
+
+export default initializeElements;

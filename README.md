@@ -13,7 +13,20 @@ $ npm install minimal-lightbox
 
 ## Usage
 
-Currently, only img tags with `data-action=zoom` will be picked up on page load and bound to be zoomable. This module is dependent on classes/styles to produce the lightbox effect, so your mileage may vary on certain older browsers.
+There are two primary ways to consume this library:
+
+1. data-attributes on elements: they must be present when this library is loaded as it attempts to bind to all elements with `[data-action=zoom]`.
+2. It also exposes an interface to programmatically bind to elements: 
+
+  ```js
+  import minimalLightbox from 'minimal-lightbox';
+
+  // pass any selector/element node to the default import
+  minimalLightbox('.some-selector');
+  minimalLightbox(someElement);
+  ```
+
+This module is dependent on classes/styles to produce the lightbox effect, so your mileage may vary on certain older browsers.
 
 You'll want to include the styles from the `/dist` directory as well.
 
@@ -40,11 +53,5 @@ There are a couple npm scripts to help build the dist anytime you make changes i
 
 To compile new files in `/dist` that include your changes, use this:
 ```sh
-$ npm run compile
-```
-
-To include source-maps for devving changes:
-
-```sh
-$ npm run debug
+$ npm run build
 ```
