@@ -26,6 +26,12 @@ There are two primary ways to consume this library:
   minimalLightbox(someElement);
   ```
 
+### Usage as an external script tag
+
+When including this library as an external script tag (instead of with a module system like browserify or webpack) it exposes a global `minimalLightbox` as the main export. You can use that to programmatically bind elements to be zoomable.
+
+### Styles
+
 This module is dependent on classes/styles to produce the lightbox effect, so your mileage may vary on certain older browsers.
 
 You'll want to include the styles from the `/dist` directory as well.
@@ -48,8 +54,6 @@ You'll want to include the styles from the `/dist` directory as well.
 ## Contribute
 
 Fork and PR any improvements, bug fixes you find. Feel free to open new issues.
-
-There are a couple npm scripts to help build the dist anytime you make changes in `src`:
 
 To compile new files in `/dist` that include your changes, use this:
 ```sh
