@@ -52,7 +52,8 @@ const animationEndPrefixed = whichAnimationEvent();
 
 const defaults = {
   attachTo: 'body',
-  ignoreScroll: false
+  ignoreScroll: false,
+  useActualMax: false
 };
 
 class Zoomable {
@@ -123,7 +124,7 @@ class Zoomable {
       }
     } else {
       let translate = getTranslate(element);
-      let scale = getZoom(element);
+      let scale = getZoom(element, this.useActualMax);
       let overlay = document.createElement('div');
 
       // prepare overlay element
@@ -221,7 +222,7 @@ function createFillerElement(dimensions) {
     element.setAttribute('data-actual-height', dimensions.height);
   // }
 
-  element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="padding-top: ${ratio}%;"></div>`);
+  element.insertAdjacentHTML('beforebegin', `<div class="media-fill" style="width:${width}px; height:${height}px"></div>`);
   element.classList.add('media-image');
 }
 
@@ -240,12 +241,12 @@ function offset(node) {
   let rect = node.getBoundingClientRect()
 
   return {
-    top: rect.top + document.body.scrollTop,
-    left: rect.left + document.body.scrollLeft
+    top: rect.top + (document.documentElement.scrollTop || document.body.scrollTop),
+    left: rect.left + (document.documentElement.scrollLeft || document.body.scrollLeft)
   };
 }
 
-function getZoom(element) {
+function getZoom(element, useActualMax) {
   let scale = 1;
 
   // margin between full viewport and full image
@@ -255,6 +256,11 @@ function getZoom(element) {
 
   let scaleX = viewport.width / (getWidth(element) + totalOffset);
   let scaleY = viewport.height / (getHeight(element) + totalOffset);
+
+  if (useActualMax) {
+    scaleX = Math.min(scaleX, element.dataset.actualWidth / getWidth(element));
+    scaleY = Math.min(scaleY, element.dataset.actualHeight / getHeight(element));
+  }
 
   return Math.min(scaleY,scaleX);
 }

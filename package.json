@@ -2,10 +2,10 @@
   "name": "minimal-lightbox",
   "version": "1.0.6",
   "description": "A minimal Medium.com-style lightbox for enlarging media using css transforms, scaling images from their position on a page",
-  "main": "dist/index.js",
+  "main": "dist/minimal-lightbox.js",
   "scripts": {
-    "compile": "browserify -t [ babelify --optional runtime ] src/Zoomable.js -o dist/index.js && postcss --use autoprefixer src/*.css -d dist/",
-    "debug": "babel --optional runtime --source-maps-inline --modules umd src/Zoomable.js -o dist/index.js",
+    "compile": "browserify -t [ babelify --optional runtime ] src/Zoomable.js -o dist/minimal-lightbox.js && postcss --use autoprefixer src/styles.css -o dist/minimal-lightbox.css",
+    "debug": "babel --optional runtime --source-maps-inline --modules umd src/Zoomable.js -o dist/minimal-lightbox.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
