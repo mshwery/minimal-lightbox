@@ -60,13 +60,18 @@ class Zoomable {
     this.element = element;
     this.config = Object.assign({}, defaults, { element: element });
 
+    this.wrap = this.wrap.bind(this);
+    this.toggleZoom = this.toggleZoom.bind(this);
+    this.onScroll = this.onScroll.bind(this);
+    this.removeZoomClass = this.removeZoomClass.bind(this);
+
     // bind element to do things when the image has loaded
     onImageLoad.call(element);
 
     // bind click to toggle zoom
-    element.addEventListener('click', this.toggleZoom.bind(this), false);
+    element.addEventListener('click', this.toggleZoom, false);
 
-    prefixedEvent(element, 'TransitionEnd', this.removeZoomClass.bind(this));
+    prefixedEvent(element, 'TransitionEnd', this.removeZoomClass);
 
     // wrap with container
     this.wrap();
@@ -91,7 +96,6 @@ class Zoomable {
   toggleZoom(zoomOut) {
     let element = this.element;
     let isZoomed = typeof zoomOut === 'boolean' ? zoomOut : element.classList.contains('zoomed');
-    let scrollFn = this.onScroll.bind(this);
 
     // clear all other elements caught in transition (not sure how this happens)
     let siblings = document.querySelectorAll('.zooming');
@@ -119,7 +123,7 @@ class Zoomable {
 
       // remove scroll listener on this element
       if (!this.config.ignoreScroll) {
-        document.removeEventListener('scroll', scrollFn);
+        document.removeEventListener('scroll', this.onScroll);
       }
     } else {
       let translate = getTranslate(element);
@@ -137,11 +141,11 @@ class Zoomable {
       element.parentNode.insertBefore(overlay, element.nextElementSibling);
 
       // bind click on overlay
-      once(overlay, 'click', this.toggleZoom.bind(this));
+      once(overlay, 'click', this.toggleZoom);
 
       // listen for scroll, bound to this element
       if (!this.config.ignoreScroll) {
-        document.addEventListener('scroll', scrollFn);
+        document.addEventListener('scroll', this.onScroll);
       }
     }
 
@@ -151,7 +155,7 @@ class Zoomable {
   onScroll() {
     if (!this._ignoreScroll) {
       this._ignoreScroll = true;
-      this.toggleZoom.call(this, true);
+      this.toggleZoom(true);
     }
   }
 
@@ -237,8 +241,6 @@ function offset(node) {
 }
 
 function getZoom(element, useActualMax) {
-  let scale = 1;
-
   // margin between full viewport and full image
   let margin = 20;
   let totalOffset = margin * 2;
